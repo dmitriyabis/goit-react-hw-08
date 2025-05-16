@@ -1,0 +1,45 @@
+.item {
+  border: 1px solid blanchedalmond;
+  padding: 10px;
+  min-width: 180px;
+  border-radius: 5%;
+  margin: 5px;
+  box-shadow: 0 4px 20px rgba(17, 7, 129, 0.7);
+}
+
+.item:hover {
+  background-color: rgb(242, 242, 242);
+  scale: 1.1;
+  box-shadow: 0 4px 20px rgba(208, 255, 0, 0.1),
+    0 2px 10px rgba(94, 143, 243, 0.9);
+}
+
+.table {
+  margin: 20px;
+  padding: 10px;
+  min-width: 300px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.p {
+  padding: 0;
+  margin: 0;
+}
+
+.button {
+  display: flex;
+  height: 25px;
+  font-size: 13px;
+  align-items: center;
+  justify-self: center;
+  margin: 5px;
+}
+
+.label {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+}

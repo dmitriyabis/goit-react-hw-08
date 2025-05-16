@@ -1,0 +1,19 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  margin: 20px;
+}
+
+[name="search"] {
+  min-width: 200px;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.inputGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
