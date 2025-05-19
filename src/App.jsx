@@ -1,46 +1,29 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import "./App.css";
 import ContactForm from "./components/ContactForm/ContactForm";
 import ContactList from "./components/ContactList/ContactList";
 import SearchBox from "./components/SearchBox/SearchBox";
-import { nanoid } from "nanoid";
-import initialData from "./components/Contact/data.json";
-
-const getInitialContacts = () => {
-  const saved = localStorage.getItem("contacts");
-  return saved ? JSON.parse(saved) : initialData;
-};
+import { fetchContacts } from "./redux/contactsOps";
 
 function App() {
-  const [contacts, setContacts] = useState(getInitialContacts);
-  const [search, setSearch] = useState("");
+  const dispatch = useDispatch();
+  const isLoading = useSelector((state) => state.contacts.isLoading);
+  const error = useSelector((state) => state.contacts.error);
 
   useEffect(() => {
-    localStorage.setItem("contacts", JSON.stringify(contacts));
-  }, [contacts]);
-
-  const addContact = (newContact) => {
-    const contactWithId = { id: nanoid(), ...newContact };
-    setContacts((prev) => [...prev, contactWithId]);
-  };
-
-  const deleteContact = (idToDelete) => {
-    setContacts((prev) => prev.filter(({ id }) => id !== idToDelete));
-  };
-
-  const filteredContacts = contacts.filter(({ name }) =>
-    name.toLowerCase().includes(search.toLowerCase())
-  );
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   return (
-    <>
-      <div>
-        <h1>Phonebook</h1>
-        <ContactForm addContact={addContact} />
-        <SearchBox onSearch={setSearch} />
-        <ContactList data={filteredContacts} onDelete={deleteContact} />
-      </div>
-    </>
+    <div>
+      <h1>Phonebook</h1>
+      <ContactForm />
+      <SearchBox />
+      {isLoading && <p>Loading contacts...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <ContactList />
+    </div>
   );
 }
 
