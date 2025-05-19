@@ -27,8 +27,8 @@ function ContactForm() {
   const dispatch = useDispatch();
 
   const handleSubmit = (values, actions) => {
-    dispatch(addContact({ id: nanoid(), ...values })); // Ensure we add an `id`
-    actions.resetForm(); // Reset form after submit
+    dispatch(addContact({ id: nanoid(), ...values }));
+    actions.resetForm();
   };
 
   return (
