@@ -1,28 +1,30 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { refreshUser } from "./redux/auth/operations";
+import { fetchContacts } from "./redux/contacts/operations";
+import { selectIsLoggedIn } from "./redux/auth/selectors";
+import AppRoutes from "./routes"; // ✅ Routing separated
 import "./App.css";
-import ContactForm from "./components/ContactForm/ContactForm";
-import ContactList from "./components/ContactList/ContactList";
-import SearchBox from "./components/SearchBox/SearchBox";
-import { fetchContacts } from "./redux/contactsOps";
 
 function App() {
   const dispatch = useDispatch();
-  const isLoading = useSelector((state) => state.contacts.isLoading);
-  const error = useSelector((state) => state.contacts.error);
+  const isLoggedIn = useSelector(selectIsLoggedIn);
 
+  // Refresh user on app load
   useEffect(() => {
-    dispatch(fetchContacts());
+    dispatch(refreshUser());
   }, [dispatch]);
 
+  // Fetch contacts only after login
+  useEffect(() => {
+    if (isLoggedIn) {
+      dispatch(fetchContacts());
+    }
+  }, [dispatch, isLoggedIn]);
+
   return (
-    <div>
-      <h1>Phonebook</h1>
-      <ContactForm />
-      <SearchBox />
-      {isLoading && <p>Loading contacts...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <ContactList />
+    <div className="App">
+      <AppRoutes />
     </div>
   );
 }
