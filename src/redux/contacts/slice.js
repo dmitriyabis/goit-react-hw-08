@@ -1,5 +1,6 @@
 import { createSlice, createSelector } from "@reduxjs/toolkit";
 import { fetchContacts, addContact, deleteContact } from "./operations";
+import { logout } from "../auth/operations"; // Імпортуємо logOut
 
 const initialState = {
   items: [],
@@ -7,8 +8,10 @@ const initialState = {
   error: null,
 };
 
+// Утиліти для обробки станів
 const handlePending = (state) => {
   state.isLoading = true;
+  state.error = null; // очищаємо помилку при новому запиті
 };
 
 const handleRejected = (state, action) => {
@@ -20,7 +23,7 @@ const contactsSlice = createSlice({
   name: "contacts",
   initialState,
   reducers: {
-    resetContacts: () => initialState, // 🟢 Додаємо reset тут
+    resetContacts: () => initialState, // додаткове скидання вручну (якщо потрібно)
   },
   extraReducers: (builder) => {
     builder
@@ -43,14 +46,16 @@ const contactsSlice = createSlice({
         state.isLoading = false;
         state.error = null;
         state.items = state.items.filter(
-          (task) => task.id !== action.payload.id
+          (contact) => contact.id !== action.payload.id
         );
       })
-      .addCase(deleteContact.rejected, handleRejected);
+      .addCase(deleteContact.rejected, handleRejected)
+      // ⬇️ Очищення контактів при виході з акаунта
+      .addCase(logout.fulfilled, () => initialState);
   },
 });
 
-// 🟢 Правильний експорт
+// Експорти
 export const { resetContacts } = contactsSlice.actions;
 export const contactsReducer = contactsSlice.reducer;
 
@@ -63,7 +68,8 @@ export const selectNameFilter = (state) => state.filters.name;
 export const selectFilteredContacts = createSelector(
   [selectContacts, selectNameFilter],
   (contacts, filter) => {
-    const normalizedFilter = filter.toLowerCase();
+    const normalizedFilter = filter.trim().toLowerCase();
+    if (!normalizedFilter) return contacts;
     return contacts.filter((contact) =>
       contact.name.toLowerCase().includes(normalizedFilter)
     );
