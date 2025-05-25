@@ -1,28 +1,15 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import { resetContacts } from "../contacts/slice"; //
-
-axios.defaults.baseURL = "https://connections-api.goit.global";
-
-const setAuthHeader = (token) => {
-  axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-};
-
-const clearAuthHeader = () => {
-  delete axios.defaults.headers.common.Authorization;
-};
+import { api, setAuthHeader, clearAuthHeader } from "../contacts/operations";
+import { resetContacts } from "../contacts/slice";
 
 // REGISTER
 export const register = createAsyncThunk(
   "auth/register",
   async (credentials, thunkAPI) => {
     try {
-      const res = await axios.post("/users/signup", credentials);
+      const res = await api.post("/users/signup", credentials);
       setAuthHeader(res.data.token);
-
-      // Optional: persist token manually if needed
       localStorage.setItem("token", res.data.token);
-
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -37,12 +24,9 @@ export const login = createAsyncThunk(
   "auth/login",
   async (credentials, thunkAPI) => {
     try {
-      const res = await axios.post("/users/login", credentials);
+      const res = await api.post("/users/login", credentials);
       setAuthHeader(res.data.token);
-
-      // Optional: persist token manually if not using redux-persist
       localStorage.setItem("token", res.data.token);
-
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -55,12 +39,9 @@ export const login = createAsyncThunk(
 // LOGOUT
 export const logout = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
   try {
-    await axios.post("/users/logout");
+    await api.post("/users/logout");
     clearAuthHeader();
-
-    // Clear token from localStorage
     localStorage.removeItem("token");
-
     thunkAPI.dispatch(resetContacts());
   } catch (error) {
     return thunkAPI.rejectWithValue(
@@ -76,7 +57,6 @@ export const refreshUser = createAsyncThunk(
     const state = thunkAPI.getState();
     let token = state.auth.token;
 
-    // Try getting token from localStorage if not in Redux
     if (!token) {
       token = localStorage.getItem("token");
       if (token) {
@@ -88,8 +68,8 @@ export const refreshUser = createAsyncThunk(
 
     try {
       setAuthHeader(token);
-      const res = await axios.get("/users/current");
-      return res.data; // This is the user object
+      const res = await api.get("/users/current");
+      return res.data;
     } catch (error) {
       clearAuthHeader();
       localStorage.removeItem("token");

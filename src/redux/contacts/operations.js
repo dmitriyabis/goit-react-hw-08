@@ -1,10 +1,17 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Створюємо окремий екземпляр Axios
 const api = axios.create({
   baseURL: "https://connections-api.goit.global",
 });
+
+const setAuthHeader = (token) => {
+  api.defaults.headers.common.Authorization = `Bearer ${token}`;
+};
+
+const clearAuthHeader = () => {
+  api.defaults.headers.common.Authorization = "";
+};
 
 export const fetchContacts = createAsyncThunk(
   "contacts/fetchAll",
@@ -41,3 +48,4 @@ export const deleteContact = createAsyncThunk(
     }
   }
 );
+export { setAuthHeader, clearAuthHeader, api };
